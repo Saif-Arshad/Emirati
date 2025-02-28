@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYER
+  EMPLOYEE
+  GOVT
+  ADMIN
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+  FREELANCE
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  fullName   String
+  email      String    @unique
+  password   String
+  role       Role      @default(EMPLOYEE)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  isVerified Boolean   @default(false)
+  JobPost    JobPost[]
+  Apply Apply[]
+  Employee Employee[]
+  Employer Employer[]
+}
+
+model Employee {
+  id               Int    @id @default(autoincrement())
+  skills           String @db.Text
+  educationList    String @db.Text
+  educationHistory String
+  userId           Int
+  user             User   @relation(fields: [userId], references: [id])
+  experience       String
+}
+
+model Employer {
+  id                       Int     @id @default(autoincrement())
+  companyName              String  @db.Text
+  Location                 String  @db.Text
+  userId                   Int
+  user                     User    @relation(fields: [userId], references: [id])
+  currentEmiratiPercentage String?
+}
+
+model JobPost {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String    @db.Text
+  companyName  String
+  location     String
+  jobType      JobType
+  salary       String?
+  postedAt     DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  status       JobStatus @default(OPEN)
+  createdBy    Int
+  User         User      @relation(fields: [createdBy], references: [id])
+  applications Apply[]
+}
+
+model Apply {
+  id           Int      @id @default(autoincrement())
+  applicantId  Int
+  jobId        Int
+  cover_letter String?
+  experience   String?
+  contactInfo  String?
+  User         User     @relation(fields: [applicantId], references: [id])
+  JobPost      JobPost  @relation(fields: [jobId], references: [id])
+  appliedAt    DateTime @default(now())
+}

@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE `jobpost` MODIFY `description` TEXT NOT NULL;
+
+-- AlterTable
+ALTER TABLE `user` MODIFY `role` ENUM('EMPLOYER', 'EMPLOYEE', 'GOVT', 'ADMIN') NOT NULL DEFAULT 'EMPLOYEE';
