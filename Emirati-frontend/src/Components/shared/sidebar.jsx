@@ -38,8 +38,8 @@ const Sidebar = () => {
 
     const govtLinks = [
         { Name: "Dashboard", Link: "/profile" },
-        { Name: "Compliance Reports", Link: "/compliance-reports" },
-        { Name: "Employer Monitoring", Link: "/employer-monitoring" },
+        { Name: "Emirati Employee", Link: "/profile/employee-monitoring" },
+        { Name: "Emirati Employer", Link: "/profile/employer-monitoring" },
         { Name: "Explore Jobs", Link: "/jobs" },
     ];
 

@@ -16,9 +16,7 @@ function DashboardPage() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                if (userRole == "GOVT") {
-                    return
-                }
+              
                 const endpoint =
                     userRole === "EMPLOYEE"
                         ? "/api/user/employee"
@@ -26,13 +24,10 @@ function DashboardPage() {
                         userRole === "EMPLOYER" ?
 
                             "/api/user/employer" :
-                            userRole === "ADMIN" ?
-                                "/api/user/admin"
 
-                                :
+                            "/api/user/admin";
 
 
-                                "";
 
                 const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}${endpoint}`, {
                     method: 'GET',
@@ -126,16 +121,20 @@ function DashboardPage() {
                     :
                     [
                         {
-                            title: "Total Employee",
-                            value: 0,
+                            title: "Total Job vacancie",
+                            value: dashboardData.totalJobPosts,
+                        },
+                        {
+                            title: "Total Employees",
+                            value: dashboardData.totalEmployee,
                         },
                         {
                             title: "Total Employers",
-                            value: 0,
+                            value: dashboardData.totalEmployer,
                         },
                         {
-                            title: "Active Job vacancie",
-                            value: 0,
+                            title: "New Job vacancie",
+                            value: dashboardData.newJobPosts,
                         },
                     ]
         ;

@@ -18,6 +18,7 @@ export default function Register() {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [emiratiId, setEmiratiId] = useState('');
     const [role, setRole] = useState('EMPLOYEE');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -59,7 +60,7 @@ export default function Register() {
         setLoading(true);
 
         // Build the payload with basic info
-        let payload = { fullName, email, password, role };
+        let payload = { fullName, email, password, role, emiratiId };
 
         if (role === 'EMPLOYEE') {
             if (skills.length === 0 || education.length === 0 || !experience) {
@@ -193,6 +194,23 @@ export default function Register() {
                                                         <AiFillEye size={25} />
                                                     )}
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label
+                                                className="block my-2 text-start text-sm text-black"
+                                                htmlFor="id"
+                                            >
+                                                Emirati Id (Optional)
+                                            </label>
+                                            <div className="flex relative">
+                                                <input
+                                                    onChange={(e) => setEmiratiId(e.target.value)}
+                                                    value={emiratiId}
+                                                    className="w-full p-3 text-sm text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                                                    id="id"
+                                                    placeholder="4028974823789"
+                                                />
                                             </div>
                                         </div>
                                         <div className="grid py-4 grid-cols-2 pb-6 gap-4">

@@ -156,6 +156,7 @@ function Users() {
             email: '',
             password: '',
             role: '',
+            emiratiID: '',
             skills: [],
             educationList: [],
             experience: '',
@@ -203,6 +204,8 @@ function Users() {
                         email: formData.email,
                         password: formData.password,
                         role: formData.role,
+                        emiratiID: formData.emiratiID,
+
                         // Conditionally pass extra data if it's relevant:
                         // For EMPLOYEE
                         skills: formData.role === 'EMPLOYEE' ? formData.skills : [],
@@ -402,6 +405,17 @@ function Users() {
 
                                 {!isEdit && (
                                     <>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Emirati Id</label>
+                                                <input
+                                                    type="text"
+                                                    name="emiratiID"
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                    value={formData.emiratiID}
+                                                    onChange={handleFormChange}
+                                                />
+                                            </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
                                             <div className="relative">
@@ -420,6 +434,7 @@ function Users() {
                                                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                                                 </button>
                                             </div>
+                                        </div>
                                         </div>
 
                                         <div>

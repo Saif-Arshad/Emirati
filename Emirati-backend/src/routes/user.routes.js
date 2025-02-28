@@ -10,6 +10,6 @@ router.post("/send-verify-mail", resendVerificationEmail);
 router.post("/verify-user", verifyResetLinkAPI);
 router.get("/employee", verifyEmployeeToken, getEmployeeDashboard);
 router.get("/employer", verifyEmployerToken, getEmployerDashboard);
-router.get("/admin", verifyAdminToken, getAdminDashboard);
+router.get("/admin", getAdminDashboard);
 
 module.exports = router;

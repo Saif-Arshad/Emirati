@@ -15,6 +15,11 @@ import JobApplicant from './Components/JobApplicant';
 import Verify from './Components/Verify';
 import { useState, useEffect } from 'react';
 import Users from './Components/Users';
+import ManageJobs from './Components/Job/ManageJobs';
+import EmployeeMonitoring from './Components/Employee-monitoring';
+import EmployerMonitoring from './Components/Employer-Monitoring';
+import EmployeeAppliedDetail from './Components/EmplolyeeDetail';
+import EmployerJobPostsDetail from './Components/EmployerDetail';
 
 function App() {
   const [isProfile, setIsprofile] = useState(false)
@@ -39,7 +44,12 @@ function App() {
             <Route path="/profile/my-vacancie" element={<MyVacancies />} />
             <Route path="/profile/my-vacancie/:id" element={<JobApplicant />} />
             <Route path="/profile/my-applications" element={<MyApplications />} />
+            <Route path="/profile/employee-monitoring" element={<EmployeeMonitoring />} />
+            <Route path="/profile/employee-monitoring/:id" element={<EmployeeAppliedDetail />} />
+            <Route path="/profile/employer-monitoring" element={<EmployerMonitoring />} />
+            <Route path="/profile/employer-monitoring/:id" element={<EmployerJobPostsDetail />} />
             <Route path="/profile/users" element={<Users />} />
+            <Route path="/profile/jobs" element={<ManageJobs />} />
             <Route path="/apply/:id" element={<Apply />} />
           </Routes>
         </div>

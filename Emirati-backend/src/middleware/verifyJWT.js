@@ -98,9 +98,11 @@ exports.verifyAdminToken = async (req, res, next) => {
         if (token.startsWith("Bearer ")) token = token.slice(7, token.length).trimLeft();
 
         const decoded = jwt.verify(token, SECRET_KEY);
+        console.log("🚀 ~ exports.verifyAdminToken= ~ decoded:", decoded)
 
         const user = await prisma.user.findUnique({ where: { id: decoded.id } });
         if (!user) return res.status(401).json({ error: "Invalid or expired session." });
+        console.log("🚀 ~ exports.verifyAdminToken= ~ user:", user)
 
         if (user.role !== "ADMIN") return res.status(403).json({ error: "Access Denied. Admin only route." });
 

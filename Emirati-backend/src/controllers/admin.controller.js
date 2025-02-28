@@ -29,6 +29,7 @@ exports.createUser = async (req, res) => {
         password,
         role,
         skills,
+        emiratiID,
         educationList,
         experience,
         companyName,
@@ -43,7 +44,7 @@ exports.createUser = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await prisma.user.create({
-            data: { fullName, email, password: hashedPassword, role, isVerified: true },
+            data: { fullName, email, password: hashedPassword, role, isVerified: true, emiratiID },
         });
 
         if (role === "EMPLOYEE") {
@@ -124,7 +125,8 @@ exports.getAllJobPosts = async (req, res) => {
 };
 
 exports.createJobPost = async (req, res) => {
-    const { title, description, companyName, location, jobType, salary, createdBy } = req.body;
+    const { title, description, companyName, location, jobType, salary } = req.body;
+
     try {
         const newJobPost = await prisma.jobPost.create({
             data: {
@@ -134,7 +136,7 @@ exports.createJobPost = async (req, res) => {
                 location,
                 jobType,
                 salary,
-                createdBy,
+                createdBy: req.user.id,
             },
         });
         return res.status(201).json(newJobPost);
