@@ -1,5 +1,5 @@
 const express = require("express");
-const { register, login, getEmployeeDashboard, getEmployerDashboard, resendVerificationEmail, verifyResetLinkAPI, getAdminDashboard } = require("../controllers/user.controller");
+const { register, login, getEmployeeDashboard, getEmployerDashboard, resendVerificationEmail, verifyResetLinkAPI, getAdminDashboard, getGovtDashboard } = require("../controllers/user.controller");
 const { verifyEmployeeToken, verifyEmployerToken, verifyAdminToken } = require("../middleware/verifyJWT");
 
 const router = express.Router();
@@ -11,5 +11,6 @@ router.post("/verify-user", verifyResetLinkAPI);
 router.get("/employee", verifyEmployeeToken, getEmployeeDashboard);
 router.get("/employer", verifyEmployerToken, getEmployerDashboard);
 router.get("/admin", getAdminDashboard);
+router.get("/govt", getGovtDashboard);
 
 module.exports = router;

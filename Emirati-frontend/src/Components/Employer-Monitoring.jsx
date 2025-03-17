@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 
 function EmployerMonitoring() {
     const [employers, setEmployers] = useState([]);
+    console.log("🚀 ~ EmployerMonitoring ~ employers:", employers)
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const rowsPerPage = 10;
@@ -46,6 +47,7 @@ function EmployerMonitoring() {
             employer.email.toLowerCase().includes(searchTerm.toLowerCase())
         );
     });
+    console.log("🚀 ~ filteredEmployers ~ filteredEmployers:", filteredEmployers)
 
     // Pagination handler
     const handleChangePage = (event, newPage) => {
@@ -75,6 +77,9 @@ function EmployerMonitoring() {
                                 <TableCell>Name</TableCell>
                                 <TableCell>Email</TableCell>
                                 <TableCell>Emirati ID</TableCell>
+                                <TableCell>Total Staff</TableCell>
+                                <TableCell>Emirati Staff</TableCell>
+                                <TableCell>Emirati Staff Percentage</TableCell>
                                 <TableCell>Verified</TableCell>
                                 <TableCell>Job Posts Count</TableCell>
                                 <TableCell>Action</TableCell>
@@ -88,6 +93,9 @@ function EmployerMonitoring() {
                                         <TableCell>{employer.fullName}</TableCell>
                                         <TableCell>{employer.email}</TableCell>
                                         <TableCell>{employer.emiratiID}</TableCell>
+                                        <TableCell>{employer.Employer[0]?.staff}</TableCell>
+                                        <TableCell>{employer.Employer[0]?.emiratiStaff}</TableCell>
+                                        <TableCell>{employer.Employer[0]?.currentEmiratiPercentage}%</TableCell>
                                         <TableCell>{employer.isVerified ? "Yes" : "No"}</TableCell>
                                         <TableCell>{employer._count?.JobPost || 0}</TableCell>
                                         <TableCell>

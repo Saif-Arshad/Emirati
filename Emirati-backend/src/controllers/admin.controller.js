@@ -33,6 +33,8 @@ exports.createUser = async (req, res) => {
         educationList,
         experience,
         companyName,
+        staff,
+        emiratiStaff,
         location,
     } = req.body;
 
@@ -62,6 +64,11 @@ exports.createUser = async (req, res) => {
                 data: {
                     companyName: companyName || "",
                     Location: location || "",
+                    staff,
+                    emiratiStaff,
+                    currentEmiratiPercentage: staff && emiratiStaff && staff > 0
+                        ? String(Math.round((emiratiStaff / staff) * 100))
+                        : "0",
                     user: { connect: { id: newUser.id } },
                 },
             });

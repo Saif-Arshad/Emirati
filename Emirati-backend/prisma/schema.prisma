@@ -57,6 +57,8 @@ model Employer {
   id                       Int     @id @default(autoincrement())
   companyName              String  @db.Text
   Location                 String  @db.Text
+  staff                    String?
+  emiratiStaff             String?
   userId                   Int
   user                     User    @relation(fields: [userId], references: [id])
   currentEmiratiPercentage String?

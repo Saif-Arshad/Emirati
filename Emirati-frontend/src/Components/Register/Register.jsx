@@ -31,6 +31,8 @@ export default function Register() {
     // Additional fields for Employer
     const [companyName, setCompanyName] = useState('');
     const [location, setLocation] = useState('');
+    const [staff, setStaff] = useState('');
+    const [emiratiStaff, setEmiratiStaff] = useState('');
 
     // Sample options for education multi-select (employee)
     const educationOptions = [
@@ -75,7 +77,7 @@ export default function Register() {
                 experience,
             };
         } else if (role === 'EMPLOYER') {
-            if (!companyName || !location) {
+            if (!companyName || !location || !staff || !emiratiStaff) {
                 toast.error('Please fill out all employer fields');
                 setLoading(false);
                 return;
@@ -84,6 +86,8 @@ export default function Register() {
                 ...payload,
                 companyName,
                 location,
+                emiratiStaff,
+                staff
             };
         }
 
@@ -304,7 +308,7 @@ export default function Register() {
                                         )}
                                         {role === 'EMPLOYER' && (
                                             <>
-                                                <div className="grid py-4 md:grid-cols-2 pb-6 gap-4">
+                                                <div className="grid py-4 md:grid-cols-2 pb-1 gap-4">
 
                                                     <div className="mb-4">
                                                         <label
@@ -336,6 +340,41 @@ export default function Register() {
                                                             id="location"
                                                             type="text"
                                                             placeholder="Company Location"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="grid py-4 md:grid-cols-2 pb-6 gap-4">
+
+                                                    <div className="mb-4">
+                                                        <label
+                                                            className="block mb-2 text-start text-sm text-black"
+                                                            htmlFor="companyName"
+                                                        >
+                                                            Total Staff
+                                                        </label>
+                                                        <input
+                                                            onChange={(e) => setStaff(e.target.value)}
+                                                            value={staff}
+                                                            className="w-full p-3 text-sm text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                                                            id="companyName"
+                                                            type="number"
+                                                            placeholder="Total Staff"
+                                                        />
+                                                    </div>
+                                                    <div className="mb-4">
+                                                        <label
+                                                            className="block mb-2 text-start text-sm text-black"
+                                                            htmlFor="location"
+                                                        >
+                                                            Total Emirati staff
+                                                        </label>
+                                                        <input
+                                                            onChange={(e) => setEmiratiStaff(e.target.value)}
+                                                            value={emiratiStaff}
+                                                            className="w-full p-3 text-sm text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                                                            id="location"
+                                                            type="number"
+                                                            placeholder="  Total Emirati staff"
                                                         />
                                                     </div>
                                                 </div>

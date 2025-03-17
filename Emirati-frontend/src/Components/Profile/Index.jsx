@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
+import { Card, CardContent, Typography, Grid, CircularProgress } from '@mui/material';
 import Layout from '../shared/SidebarLayout';
+import { Pie } from 'react-chartjs-2';
+import Chart from 'chart.js/auto';
 
 function DashboardPage() {
+    // Get user role and token from localStorage
     const role = localStorage.getItem("user-role");
     const token = localStorage.getItem("user-token");
-
-
-    const userToken = token.replace(/"/g, '');
-    const userRole = role.replace(/"/g, '');
+    const userToken = token ? token.replace(/"/g, '') : "";
+    const userRole = role ? role.replace(/"/g, '') : "";
 
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -16,18 +18,14 @@ function DashboardPage() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-              
                 const endpoint =
                     userRole === "EMPLOYEE"
                         ? "/api/user/employee"
-                        :
-                        userRole === "EMPLOYER" ?
-
-                            "/api/user/employer" :
-
-                            "/api/user/admin";
-
-
+                        : userRole === "EMPLOYER"
+                            ? "/api/user/employer"
+                            : userRole === "GOVT"
+                                ? "/api/user/govt"
+                                : "/api/user/admin";
 
                 const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}${endpoint}`, {
                     method: 'GET',
@@ -55,19 +53,120 @@ function DashboardPage() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                <p className="text-xl">Loading...</p>
-            </div>
+            <Grid container justifyContent="center" alignItems="center" style={{ height: '100vh' }}>
+                <CircularProgress />
+            </Grid>
         );
     }
 
     if (error) {
-        return <div className="text-red-500 text-center mt-4">{error}</div>;
+        return (
+            <Typography color="error" align="center" variant="h6">
+                {error}
+            </Typography>
+        );
     }
 
-    const cards =
-        userRole === "EMPLOYEE"
-            ? [
+    // If user role is GOVT, render charts comparing Emirati vs Non‑Emirati data
+    if (userRole === "GOVT") {
+        // Expected dashboardData shape for GOVT:
+        // {
+        //   vacancy: { emirati, nonEmirati, newEmirati, newNonEmirati },
+        //   employer: { emirati, nonEmirati },
+        //   employee: { emirati, nonEmirati }
+        // }
+
+        // Vacancy chart data
+        const vacancyChartData = {
+            labels: ['Emirati', 'Non‑Emirati'],
+            datasets: [
+                {
+                    label: 'Vacancies',
+                    data: [dashboardData.vacancy.emirati, dashboardData.vacancy.nonEmirati],
+                    backgroundColor: ['#42a5f5', '#66bb6a'],
+                }
+            ]
+        };
+
+        // Employer chart data
+        const employerChartData = {
+            labels: ['Emirati', 'Non‑Emirati'],
+            datasets: [
+                {
+                    label: 'Employers',
+                    data: [dashboardData.employer.emirati, dashboardData.employer.nonEmirati],
+                    backgroundColor: ['#ef5350', '#ab47bc'],
+                }
+            ]
+        };
+
+        // Employee chart data
+        const employeeChartData = {
+            labels: ['Emirati', 'Non‑Emirati'],
+            datasets: [
+                {
+                    label: 'Employees',
+                    data: [dashboardData.employee.emirati, dashboardData.employee.nonEmirati],
+                    backgroundColor: ['#ffa726', '#26c6da'],
+                }
+            ]
+        };
+
+        return (
+            <Layout>
+                <Grid container spacing={3} style={{ padding: 16 }}>
+                    <Grid item xs={12}>
+                        <Typography variant="h4" align="center" gutterBottom>
+                            Government Dashboard
+                        </Typography>
+                    </Grid>
+
+                    {/* Vacancy Chart Card */}
+                    <Grid item xs={12} md={4}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" align="center">
+                                    Vacancies
+                                </Typography>
+                                <Pie data={vacancyChartData} />
+                                <Typography variant="body1" align="center" style={{ marginTop: 8 }}>
+                                    New Vacancies (Emirati): {dashboardData.vacancy.newEmirati}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Employer Chart Card */}
+                    <Grid item xs={12} md={4}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" align="center">
+                                    Employers
+                                </Typography>
+                                <Pie data={employerChartData} />
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Employee Chart Card */}
+                    <Grid item xs={12} md={4}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" align="center">
+                                    Employees
+                                </Typography>
+                                <Pie data={employeeChartData} />
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
+            </Layout>
+        );
+    } else {
+        // For non-GOVT roles, fallback to a simple card layout
+        let cards = [];
+        if (userRole === "EMPLOYEE") {
+            cards = [
                 {
                     title: "Total Open Job Posts",
                     value: dashboardData.totalJobPosts,
@@ -80,87 +179,64 @@ function DashboardPage() {
                     title: "New Job Posts (Last 7 Days)",
                     value: dashboardData.newJobPosts,
                 },
-            ]
-            :
-            userRole === "EMPLOYER" ?
+            ];
+        } else if (userRole === "EMPLOYER") {
+            cards = [
+                {
+                    title: "Your Total Job Vacancies",
+                    value: dashboardData.totalJobPosts,
+                },
+                {
+                    title: "Total Applications Received",
+                    value: dashboardData.totalApplications,
+                },
+                {
+                    title: "Active Job Vacancies",
+                    value: dashboardData.activeJobPosts,
+                },
+            ];
+        } else if (userRole === "ADMIN") {
+            cards = [
+                {
+                    title: "Total Job Vacancies",
+                    value: dashboardData.totalJobPosts,
+                },
+                {
+                    title: "Total Employees",
+                    value: dashboardData.totalEmployee,
+                },
+                {
+                    title: "Total Employers",
+                    value: dashboardData.totalEmployer,
+                },
+                {
+                    title: "New Job Vacancies",
+                    value: dashboardData.newJobPosts,
+                },
+            ];
+        }
 
-                [
-                    {
-                        title: "Your Total Job vacancie",
-                        value: dashboardData.totalJobPosts,
-                    },
-                    {
-                        title: "Total Applications Received",
-                        value: dashboardData.totalApplications,
-                    },
-                    {
-                        title: "Active Job vacancie",
-                        value: dashboardData.activeJobPosts,
-                    },
-                ] :
-                userRole === "ADMIN" ?
-
-                    [
-                        {
-                            title: "Total Job vacancie",
-                            value: dashboardData.totalJobPosts,
-                        },
-                        {
-                            title: "Total Employees",
-                            value: dashboardData.totalEmployee,
-                        },
-                        {
-                            title: "Total Employers",
-                            value: dashboardData.totalEmployer,
-                        },
-                        {
-                            title: "New Job vacancie",
-                            value: dashboardData.newJobPosts,
-                        },
-                    ]
-                    :
-                    [
-                        {
-                            title: "Total Job vacancie",
-                            value: dashboardData.totalJobPosts,
-                        },
-                        {
-                            title: "Total Employees",
-                            value: dashboardData.totalEmployee,
-                        },
-                        {
-                            title: "Total Employers",
-                            value: dashboardData.totalEmployer,
-                        },
-                        {
-                            title: "New Job vacancie",
-                            value: dashboardData.newJobPosts,
-                        },
-                    ]
-        ;
-
-    return (
-        <Layout>
-
-            <div className="container mx-auto p-4 min-h-[70vh]">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        return (
+            <Layout>
+                <Grid container spacing={3} style={{ padding: 16 }}>
                     {cards.map((card, index) => (
-                        <div
-                            key={index}
-                            className="bg-slate-100 rounded-xl p-6 "
-                        >
-                            <h3 className="text-xl font-semibold text-gray-700">{card.title}</h3>
-                            <p className="text-4xl font-bold text-gray-900 mt-4">
-                                {card.value}
-                            </p>
-                        </div>
+                        <Grid item xs={12} md={3} key={index}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h6" align="center">
+                                        {card.title}
+                                    </Typography>
+                                    <Typography variant="h4" align="center">
+                                        {card.value}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
                     ))}
-                </div>
-
-            </div>
-        </Layout>
-
-    );
+                </Grid>
+            </Layout>
+        );
+    }
 }
 
-export default DashboardPage; 
+export default DashboardPage;

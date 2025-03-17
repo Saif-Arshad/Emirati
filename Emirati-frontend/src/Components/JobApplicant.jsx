@@ -8,6 +8,7 @@ function JobApplicant() {
     const { id: jobId } = useParams();
     const [loading, setLoading] = useState(false);
     const [applicants, setApplicants] = useState([]);
+    console.log("🚀 ~ JobApplicant ~ applicants:", applicants)
     const [selectedApplicant, setSelectedApplicant] = useState(null);
     const [openModal, setOpenModal] = useState(false);
 
@@ -89,6 +90,9 @@ function JobApplicant() {
                                 </h2>
                                 <p className="text-gray-600 text-start text-lg" >
                                     <strong>Email:</strong> {applicant.User.email}
+                                </p>
+                                <p className="text-gray-600 text-start text-lg" >
+                                    <strong>Is Candidate Emirati:</strong> {applicant.User.emiratiID == null ? "NO" : "YES"}
                                 </p>
                                 <p className="text-gray-600 text-start text-lg" >
 

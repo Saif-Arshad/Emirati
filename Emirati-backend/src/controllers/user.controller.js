@@ -46,10 +46,10 @@ exports.register = async (req, res) => {
                 },
             });
         } else if (role === "EMPLOYER") {
-            const { companyName, location } = req.body;
+            const { companyName, location, emiratiStaff, staff } = req.body;
 
             // Validate the additional fields
-            if (!companyName || !location) {
+            if (!companyName || !location || !staff || !emiratiStaff) {
                 return res.status(400).json({ message: "Missing employer fields" });
             }
 
@@ -57,6 +57,11 @@ exports.register = async (req, res) => {
                 data: {
                     companyName,
                     Location: location,
+                    emiratiStaff,
+                    staff,
+                    currentEmiratiPercentage: staff && emiratiStaff && staff > 0
+                        ? String(Math.round((emiratiStaff / staff) * 100))
+                        : "0",
                     user: { connect: { id: newUser.id } },
                 },
             });
@@ -159,6 +164,7 @@ exports.login = async (req, res) => {
         console.log("🚀 ~ exports.login= ~ password:", password)
 
         const user = await prisma.user.findUnique({ where: { email } });
+        console.log("🚀 ~ exports.login= ~ user:", user)
         if (!user) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
@@ -251,6 +257,97 @@ exports.getAdminDashboard = async (req, res) => {
     } catch (error) {
         console.error('Error fetching employee dashboard data:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+exports.getGovtDashboard = async (req, res) => {
+    try {
+        // Vacancy (job posts) counts
+        const totalJobPostsEmirati = await prisma.jobPost.count({
+            where: {
+                status: "OPEN",
+                User: {
+                    emiratiID: { not: null },
+                },
+            },
+        });
+        const totalJobPostsNonEmirati = await prisma.jobPost.count({
+            where: {
+                status: "OPEN",
+                User: {
+                    emiratiID: null,
+                },
+            },
+        });
+
+        // Employer counts
+        const totalEmployerEmirati = await prisma.user.count({
+            where: {
+                role: "EMPLOYER",
+                emiratiID: { not: null },
+            },
+        });
+        const totalEmployerNonEmirati = await prisma.user.count({
+            where: {
+                role: "EMPLOYER",
+                emiratiID: null,
+            },
+        });
+
+        // Employee counts
+        const totalEmployeeEmirati = await prisma.user.count({
+            where: {
+                role: "EMPLOYEE",
+                emiratiID: { not: null },
+            },
+        });
+        const totalEmployeeNonEmirati = await prisma.user.count({
+            where: {
+                role: "EMPLOYEE",
+                emiratiID: null,
+            },
+        });
+
+        // New job posts counts in the last week for vacancies
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const newJobPostsEmirati = await prisma.jobPost.count({
+            where: {
+                status: "OPEN",
+                postedAt: { gte: oneWeekAgo },
+                User: {
+                    emiratiID: { not: null },
+                },
+            },
+        });
+        const newJobPostsNonEmirati = await prisma.jobPost.count({
+            where: {
+                status: "OPEN",
+                postedAt: { gte: oneWeekAgo },
+                User: {
+                    emiratiID: null,
+                },
+            },
+        });
+
+        return res.status(200).json({
+            vacancy: {
+                emirati: totalJobPostsEmirati,
+                nonEmirati: totalJobPostsNonEmirati,
+                newEmirati: newJobPostsEmirati,
+                newNonEmirati: newJobPostsNonEmirati,
+            },
+            employer: {
+                emirati: totalEmployerEmirati,
+                nonEmirati: totalEmployerNonEmirati,
+            },
+            employee: {
+                emirati: totalEmployeeEmirati,
+                nonEmirati: totalEmployeeNonEmirati,
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching Emirati government dashboard data:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
     }
 };
 

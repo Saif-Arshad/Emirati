@@ -52,6 +52,8 @@ function Users() {
         skills: [],
         educationList: [],
         experience: '',
+        staff: '',
+        emiratiStaff: '',
         // Employer fields
         companyName: '',
         location: '',
@@ -214,6 +216,8 @@ function Users() {
                         // For EMPLOYER
                         companyName: formData.role === 'EMPLOYER' ? formData.companyName : '',
                         location: formData.role === 'EMPLOYER' ? formData.location : '',
+                        staff: formData.role === 'EMPLOYER' ? formData.staff : '',
+                        emiratiStaff: formData.role === 'EMPLOYER' ? formData.emiratiStaff   : '',
                     }),
                 });
                 if (res.ok) {
@@ -338,7 +342,7 @@ function Users() {
                                             </TableCell>
                                             <TableCell align="center">
                                                 <div className="flex gap-2 justify-center">
-                                                   
+
                                                     <button
                                                         onClick={() => handleOpenModal(user, true)}
                                                         className="px-3 py-1 cursor-pointer text-sm bg-blue-500 text-white hover:text-black rounded hover:bg-blue-50 flex items-center gap-1"
@@ -379,33 +383,33 @@ function Users() {
                     <DialogContent className="mt-4">
                         {step === 1 && (
                             <div className="space-y-4">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                    <input
-                                        type="text"
-                                        name="fullName"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                        value={formData.fullName}
-                                        onChange={handleFormChange}
-                                    />
-                                </div>
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <input
+                                            type="text"
+                                            name="fullName"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            value={formData.fullName}
+                                            onChange={handleFormChange}
+                                        />
+                                    </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                                    <input
-                                        type="email"
-                                        name="email"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                        value={formData.email}
-                                        onChange={handleFormChange}
-                                    />
-                                </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                            value={formData.email}
+                                            onChange={handleFormChange}
+                                        />
+                                    </div>
                                 </div>
 
                                 {!isEdit && (
                                     <>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">Emirati Id</label>
                                                 <input
@@ -416,25 +420,25 @@ function Users() {
                                                     onChange={handleFormChange}
                                                 />
                                             </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                            <div className="relative">
-                                                <input
-                                                    type={showPassword ? 'text' : 'password'}
-                                                    name="password"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
-                                                    value={formData.password}
-                                                    onChange={handleFormChange}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                >
-                                                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                                </button>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type={showPassword ? 'text' : 'password'}
+                                                        name="password"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                                                        value={formData.password}
+                                                        onChange={handleFormChange}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                    >
+                                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
                                         </div>
 
                                         <div>
@@ -520,6 +524,44 @@ function Users() {
                                             value={formData.location}
                                             onChange={handleFormChange}
                                         />
+                                        <div className="grid py-4 md:grid-cols-2 pb-6 gap-4">
+
+                                            <div className="mb-4">
+                                                <label
+                                                    className="block mb-2 text-start text-sm text-black"
+                                                    htmlFor="companyName"
+                                                >
+                                                    Total Staff
+                                                </label>
+                                                <input
+                                                    onChange={handleFormChange}
+                                                    value={formData.staff}
+                                                    name='staff'
+                                                    className="w-full p-3 text-sm text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                                                    id="staff"
+                                                    type="number"
+                                                    placeholder="Total Staff"
+                                                />
+                                            </div>
+                                            <div className="mb-4">
+                                                <label
+                                                    className="block mb-2 text-start text-sm text-black"
+                                                    htmlFor="location"
+                                                >
+                                                    Total Emirati staff
+                                                </label>
+                                                <input
+                                                    onChange={handleFormChange}
+                                                    value={formData.emiratiStaff}
+                                                    name='emiratiStaff'
+
+                                                    className="w-full p-3 text-sm text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                                                    id="emiratiStaff"
+                                                    type="number"
+                                                    placeholder="  Total Emirati staff"
+                                                />
+                                            </div>
+                                        </div>
                                     </>
                                 )}
 
