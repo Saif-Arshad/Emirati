@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Layout from "./shared/SidebarLayout";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Modal, Box, Typography, Button, CircularProgress } from "@mui/material";
+import { Modal, Box, Typography, Button, CircularProgress, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 function JobApplicant() {
     const { id: jobId } = useParams();
@@ -11,6 +11,7 @@ function JobApplicant() {
     console.log("🚀 ~ JobApplicant ~ applicants:", applicants)
     const [selectedApplicant, setSelectedApplicant] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [updatingStatus, setUpdatingStatus] = useState(false);
 
     const token = localStorage.getItem("user-token");
 
@@ -52,12 +53,49 @@ function JobApplicant() {
 
         fetchJobApplicant();
     }, [token, jobId]);
+    const handleStatusUpdate = async (applicationId, newStatus) => {
+        setUpdatingStatus(true);
+        try {
+            const userToken = token.replace(/"/g, "");
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/job/application/${applicationId}/status`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${userToken}`,
+                    },
+                    body: JSON.stringify({ status: newStatus }),
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to update status.");
+            }
+
+            // Update the local state
+            setApplicants(prevApplications =>
+                prevApplications.map(app =>
+                    app.id === applicationId ? { ...app, status: newStatus } : app
+                )
+            );
+            toast.success("Application status updated successfully!");
+        } catch (error) {
+            console.error("Error updating status:", error);
+            toast.error(error.message || "Failed to update application status!");
+        } finally {
+            setUpdatingStatus(false);
+        }
+    };
 
     // Open Modal with selected applicant data
     const handleOpenModal = (applicant) => {
         setSelectedApplicant(applicant);
         setOpenModal(true);
     };
+    const statusOptions = ["UNDER_REVIEW", "HIRED", "CLOSED"];
+
 
     // Close Modal
     const handleCloseModal = () => {
@@ -96,13 +134,28 @@ function JobApplicant() {
                                 </p>
                                 <p className="text-gray-600 text-start text-lg" >
 
-                                    <strong>Relevent Experience:</strong> {applicant.experience}
+                                    <strong>Application Status:</strong> {applicant.status}
                                 </p>
                                 <p className="text-gray-600 text-start text-lg" >
 
                                     Applied on: {new Date(applicant.appliedAt).toLocaleDateString()}
                                 </p>
-                                <div className="mt-4 flex items-center justify-end">
+                                <div className="pt-8 flex items-center justify-between">
+                                      <FormControl size="small" className="w-[150px]">
+                                        <InputLabel>Update Status</InputLabel>
+                                        <Select
+                                            value={applicant.status || ""}
+                                            label="Update Status"
+                                            onChange={(e) => handleStatusUpdate(applicant.id, e.target.value)}
+                                            disabled={updatingStatus}
+                                        >
+                                            {statusOptions.map((status) => (
+                                                <MenuItem key={status} value={status}>
+                                                    {status.replace("_", " ")}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl> 
                                     <button
                                         onClick={() => handleOpenModal(applicant)}
                                         className="text-white cursor-pointer border-blue-500 border-2 bg-blue-500 hover:bg-blue-700 hover:border-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-4 lg:px-5 py-2 lg:py-2.5 sm:mr-2 lg:mr-0  focus:outline-none "

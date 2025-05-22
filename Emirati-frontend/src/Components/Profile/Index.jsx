@@ -20,12 +20,12 @@ function DashboardPage() {
             try {
                 const endpoint =
                     userRole === "EMPLOYEE"
-                        ? "/api/user/employee"
+                        ? "/api/user/employee/dashboard"
                         : userRole === "EMPLOYER"
-                            ? "/api/user/employer"
+                            ? "/api/user/employer/dashboard"
                             : userRole === "GOVT"
-                                ? "/api/user/govt"
-                                : "/api/user/admin";
+                                ? "/api/user/govt/dashboard"
+                                : "/api/user/admin/dashboard";
 
                 const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}${endpoint}`, {
                     method: 'GET',
@@ -193,6 +193,18 @@ function DashboardPage() {
                 {
                     title: "Active Job Vacancies",
                     value: dashboardData.activeJobPosts,
+                },
+                {
+                    title: "Total Emirati Hired",
+                    value: dashboardData.totalEmiratiHired,
+                },
+                {
+                    title: "Our Emirati Target Percentage",
+                    value: dashboardData.ourEmiratiTargetPercentage + "%",
+                },
+                {
+                    title: "Our Emirati Hired Percentage",
+                    value: dashboardData.ourEmiratiHiredPercentage + "%",
                 },
             ];
         } else if (userRole === "ADMIN") {

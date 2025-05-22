@@ -25,18 +25,32 @@ exports.createJobPost = async (req, res) => {
     }
 };
 exports.getAllMyJobPosts = async (req, res) => {
-    const employer = req.user.id
-
     try {
         const jobPosts = await prisma.jobPost.findMany({
             where: {
-                createdBy: employer
+                createdBy: req.user.id,
             },
-            include: { User: true, applications: true },
+            include: {
+                applications: {
+                    include: {
+                        User: {
+                            select: {
+                                fullName: true,
+                                email: true,
+                            }
+                        }
+                    }
+                }
+            },
+            orderBy: {
+                postedAt: "desc",
+            },
         });
-        res.status(200).json(jobPosts);
+
+        return res.status(200).json(jobPosts);
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch job posts." });
+        console.log("🚀 ~ exports.getAllMyJobPosts= ~ error:", error);
+        return res.status(500).json({ error: "Failed to fetch job posts." });
     }
 };
 exports.getAllJobPosts = async (req, res) => {
@@ -53,17 +67,31 @@ exports.getAllJobPosts = async (req, res) => {
 
 exports.getJobPostById = async (req, res) => {
     const { id } = req.params;
-
     try {
         const jobPost = await prisma.jobPost.findUnique({
             where: { id: parseInt(id) },
-            include: { applications: true },
+            include: {
+                applications: {
+                    include: {
+                        User: {
+                            select: {
+                                fullName: true,
+                                email: true,
+                            }
+                        }
+                    }
+                }
+            }
         });
-        if (!jobPost) return res.status(404).json({ error: "Job post not found." });
 
-        res.status(200).json(jobPost);
+        if (!jobPost) {
+            return res.status(404).json({ error: "Job post not found." });
+        }
+
+        return res.status(200).json(jobPost);
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch job post." });
+        console.log("🚀 ~ exports.getJobPostById= ~ error:", error);
+        return res.status(500).json({ error: "Failed to fetch job post." });
     }
 };
 exports.updateJobPost = async (req, res) => {

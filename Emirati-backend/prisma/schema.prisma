@@ -27,6 +27,12 @@ enum JobStatus {
   CLOSED
 }
 
+enum ApplicationStatus {
+  UNDER_REVIEW
+  HIRED
+  CLOSED
+}
+
 model User {
   id         Int        @id @default(autoincrement())
   fullName   String
@@ -59,6 +65,7 @@ model Employer {
   Location                 String  @db.Text
   staff                    String?
   emiratiStaff             String?
+  targetEmirati           String  @default("0")
   userId                   Int
   user                     User    @relation(fields: [userId], references: [id])
   currentEmiratiPercentage String?
@@ -81,13 +88,14 @@ model JobPost {
 }
 
 model Apply {
-  id           Int      @id @default(autoincrement())
+  id           Int               @id @default(autoincrement())
   applicantId  Int
   jobId        Int
   cover_letter String?
   experience   String?
   contactInfo  String?
-  User         User     @relation(fields: [applicantId], references: [id])
-  JobPost      JobPost  @relation(fields: [jobId], references: [id])
-  appliedAt    DateTime @default(now())
+  status       ApplicationStatus @default(UNDER_REVIEW)
+  User         User             @relation(fields: [applicantId], references: [id])
+  JobPost      JobPost          @relation(fields: [jobId], references: [id])
+  appliedAt    DateTime         @default(now())
 }

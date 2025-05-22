@@ -79,9 +79,10 @@ function EmployerMonitoring() {
                                 <TableCell>Emirati ID</TableCell>
                                 <TableCell>Total Staff</TableCell>
                                 <TableCell>Emirati Staff</TableCell>
-                                <TableCell>Emirati Staff Percentage</TableCell>
-                                <TableCell>Verified</TableCell>
-                                <TableCell>Job Posts Count</TableCell>
+                                <TableCell>Current Emirati Percentage</TableCell>
+                                <TableCell>Target Emirati Percentage</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Job Posts</TableCell>
                                 <TableCell>Action</TableCell>
                             </TableRow>
                         </TableHead>
@@ -95,8 +96,26 @@ function EmployerMonitoring() {
                                         <TableCell>{employer.emiratiID}</TableCell>
                                         <TableCell>{employer.Employer[0]?.staff}</TableCell>
                                         <TableCell>{employer.Employer[0]?.emiratiStaff}</TableCell>
-                                        <TableCell>{employer.Employer[0]?.currentEmiratiPercentage}%</TableCell>
-                                        <TableCell>{employer.isVerified ? "Yes" : "No"}</TableCell>
+                                        <TableCell>
+                                            <div className={`px-3 py-1 rounded-full text-sm inline-block ${
+                                                Number(employer.Employer[0]?.currentEmiratiPercentage) >= Number(employer.Employer[0]?.targetEmirati)
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-yellow-100 text-yellow-800'
+                                            }`}>
+                                                {employer.Employer[0]?.currentEmiratiPercentage}%
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className="px-3 py-1 rounded-full text-sm inline-block bg-blue-100 text-blue-800">
+                                                {employer.Employer[0]?.targetEmirati}%
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            {Number(employer.Employer[0]?.currentEmiratiPercentage) >= Number(employer.Employer[0]?.targetEmirati)
+                                                ? <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800">Target Met</span>
+                                                : <span className="px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-800">In Progress</span>
+                                            }
+                                        </TableCell>
                                         <TableCell>{employer._count?.JobPost || 0}</TableCell>
                                         <TableCell>
                                             <Button

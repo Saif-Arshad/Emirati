@@ -57,6 +57,7 @@ function Users() {
         // Employer fields
         companyName: '',
         location: '',
+        targetEmirati: '',
     });
 
     // Fetch all users on component mount
@@ -525,7 +526,6 @@ function Users() {
                                             onChange={handleFormChange}
                                         />
                                         <div className="grid py-4 md:grid-cols-2 pb-6 gap-4">
-
                                             <div className="mb-4">
                                                 <label
                                                     className="block mb-2 text-start text-sm text-black"
@@ -554,13 +554,31 @@ function Users() {
                                                     onChange={handleFormChange}
                                                     value={formData.emiratiStaff}
                                                     name='emiratiStaff'
-
                                                     className="w-full p-3 text-sm text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
                                                     id="emiratiStaff"
                                                     type="number"
-                                                    placeholder="  Total Emirati staff"
+                                                    placeholder="Total Emirati staff"
                                                 />
                                             </div>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label
+                                                className="block mb-2 text-start text-sm text-black"
+                                                htmlFor="targetEmirati"
+                                            >
+                                                Target Emirati Percentage
+                                            </label>
+                                            <input
+                                                onChange={handleFormChange}
+                                                value={formData.targetEmirati}
+                                                name='targetEmirati'
+                                                className="w-full p-3 text-sm text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                                                id="targetEmirati"
+                                                type="number"
+                                                min="0"
+                                                max="100"
+                                                placeholder="Enter target percentage (0-100)"
+                                            />
                                         </div>
                                     </>
                                 )}

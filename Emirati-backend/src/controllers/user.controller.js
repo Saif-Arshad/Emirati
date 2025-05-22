@@ -46,10 +46,10 @@ exports.register = async (req, res) => {
                 },
             });
         } else if (role === "EMPLOYER") {
-            const { companyName, location, emiratiStaff, staff } = req.body;
+            const { companyName, location, emiratiStaff, staff, targetEmirati } = req.body;
 
             // Validate the additional fields
-            if (!companyName || !location || !staff || !emiratiStaff) {
+            if (!companyName || !location || !staff || !emiratiStaff || !targetEmirati) {
                 return res.status(400).json({ message: "Missing employer fields" });
             }
 
@@ -59,6 +59,7 @@ exports.register = async (req, res) => {
                     Location: location,
                     emiratiStaff,
                     staff,
+                    targetEmirati,
                     currentEmiratiPercentage: staff && emiratiStaff && staff > 0
                         ? String(Math.round((emiratiStaff / staff) * 100))
                         : "0",
@@ -398,8 +399,37 @@ exports.getEmployerDashboard = async (req, res) => {
                 },
             },
         });
-
+        const totalEmiratiHired = await prisma.apply.count({
+            where: {
+                AND: [
+                    {
+                        jobId: {
+                            in: (await prisma.jobPost.findMany({
+                                where: { createdBy: employerId },
+                                select: { id: true },
+                            })).map(job => job.id),
+                        }
+                    },
+                    {
+                        status: "HIRED"
+                    },
+                    {
+                        User: {
+                            emiratiID: {
+                                not: null
+                            }
+                        }
+                    }
+                ]
+            },
+        });
+        const ourEmiratiTarget = await prisma.employer.findFirst({
+            where: { userId: employerId },
+            select: { targetEmirati: true }
+        });
+        const ourEmiratiTargetPercentage = ourEmiratiTarget ? parseInt(ourEmiratiTarget.targetEmirati) : 0;
         // Get active job posts
+        const ourEmiratiHiredPercentage = (totalEmiratiHired / totalApplications) * 100;
         const activeJobPosts = await prisma.jobPost.count({
             where: {
                 createdBy: employerId,
@@ -411,10 +441,50 @@ exports.getEmployerDashboard = async (req, res) => {
             totalJobPosts,
             totalApplications,
             activeJobPosts,
+            totalEmiratiHired,
+            ourEmiratiTargetPercentage,
+            ourEmiratiHiredPercentage
+
         });
     } catch (error) {
         console.error("❌ Error fetching employer dashboard data:", error);
         return res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+exports.updateTargetEmirati = async (req, res) => {
+    try {
+        const { employerId } = req.params;
+        const { targetEmirati } = req.body;
+
+        // Validate input
+        if (!targetEmirati || isNaN(targetEmirati) || targetEmirati < 0 || targetEmirati > 100) {
+            return res.status(400).json({ message: "Invalid target percentage. Must be between 0 and 100." });
+        }
+
+        // Update the employer's target
+        const updatedEmployer = await prisma.employer.update({
+            where: { userId: parseInt(employerId) },
+            data: {
+                targetEmirati: String(targetEmirati)
+            },
+            include: {
+                user: {
+                    select: {
+                        fullName: true,
+                        email: true
+                    }
+                }
+            }
+        });
+
+        return res.status(200).json({
+            message: "Target Emirati percentage updated successfully",
+            employer: updatedEmployer
+        });
+    } catch (error) {
+        console.error("Error updating target Emirati percentage:", error);
+        return res.status(500).json({ message: "Server Error" });
     }
 };
 

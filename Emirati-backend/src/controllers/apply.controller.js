@@ -70,3 +70,30 @@ exports.getApplicationsForJob = async (req, res) => {
         return res.status(500).json({ error: "Failed to fetch applications." });
     }
 };
+
+exports.updateApplicationStatus = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    try {
+        // Validate status
+        const validStatuses = ["UNDER_REVIEW", "HIRED", "CLOSED"];
+        if (!validStatuses.includes(status)) {
+            return res.status(400).json({ error: "Invalid status value" });
+        }
+
+        // Update the application status
+        const updatedApplication = await prisma.apply.update({
+            where: { id: parseInt(id) },
+            data: { status },
+            include: {
+                JobPost: true,
+            },
+        });
+
+        return res.status(200).json(updatedApplication);
+    } catch (error) {
+        console.log("🚀 ~ exports.updateApplicationStatus= ~ error:", error);
+        return res.status(500).json({ error: "Failed to update application status." });
+    }
+};
