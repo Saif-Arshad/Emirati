@@ -36,6 +36,7 @@ exports.createUser = async (req, res) => {
         staff,
         emiratiStaff,
         location,
+        targetEmirati,
     } = req.body;
 
     try {
@@ -66,6 +67,7 @@ exports.createUser = async (req, res) => {
                     Location: location || "",
                     staff,
                     emiratiStaff,
+                    targetEmirati: targetEmirati || "0",
                     currentEmiratiPercentage: staff && emiratiStaff && staff > 0
                         ? String(Math.round((emiratiStaff / staff) * 100))
                         : "0",

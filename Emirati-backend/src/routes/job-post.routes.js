@@ -1,7 +1,7 @@
 const express = require("express");
 const { verifyEmployerToken, verifyEmployeeToken } = require("../middleware/verifyJWT");
 const { createJobPost, getAllMyJobPosts, getAllJobPosts, getJobPostById, updateJobPost, deleteJobPost } = require("../controllers/JobPost.controller");
-const { applyForJob, getApplicationsForJob, getMyApplications } = require("../controllers/apply.controller");
+const { applyForJob, getApplicationsForJob, getMyApplications, updateApplicationStatus } = require("../controllers/apply.controller");
 
 const router = express.Router();
 
@@ -14,5 +14,6 @@ router.delete("/:id", verifyEmployerToken, deleteJobPost);
 router.post("/apply", verifyEmployeeToken, applyForJob);
 router.get("/application/mine", verifyEmployeeToken, getMyApplications);
 router.get("/application/:id", verifyEmployerToken, getApplicationsForJob);
+router.patch("/application/:id/status", verifyEmployerToken, updateApplicationStatus);
 
 module.exports = router;

@@ -15,6 +15,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Grid,
 } from '@mui/material';
 
 function EmployerJobPostsDetail() {
@@ -87,56 +88,139 @@ function EmployerJobPostsDetail() {
 
     return (
         <Layout>
-            <Paper style={{ padding: '20px', margin: '20px' }}>
-                <Typography variant="h5" gutterBottom>
-                    Job Posts for {employer.fullName}
-                </Typography>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Job Title</TableCell>
-                                <TableCell>Company Name</TableCell>
-                                <TableCell>Location</TableCell>
-                                <TableCell>Posted At</TableCell>
-                                <TableCell>Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {employer.JobPost && employer.JobPost.length > 0 ? (
-                                employer.JobPost.map((job) => (
-                                    <TableRow key={job.id}>
-                                        <TableCell>{job.title}</TableCell>
-                                        <TableCell>{job.companyName}</TableCell>
-                                        <TableCell>{job.location}</TableCell>
-                                        <TableCell>{formatDate(job.postedAt)}</TableCell>
-                                        <TableCell>
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={() => handleOpenDialog(job)}
-                                            >
-                                                Detail
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
+            <div style={{ padding: '20px' }}>
+                {/* Company Statistics Section */}
+                {employer && employer.Employer && employer.Employer[0] && (
+                    <Paper style={{ padding: '24px', marginBottom: '24px' }}>
+                        <Typography variant="h5" gutterBottom>
+                            Company Overview: {employer.fullName}
+                        </Typography>
+                        <Grid container spacing={3} style={{ marginTop: '16px' }}>
+                            <Grid item xs={12} md={3}>
+                                <Paper elevation={0} style={{ padding: '16px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                                    <Typography variant="subtitle2" color="textSecondary">
+                                        Total Staff
+                                    </Typography>
+                                    <Typography variant="h6">
+                                        {employer.Employer[0].staff || '0'}
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} md={3}>
+                                <Paper elevation={0} style={{ padding: '16px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                                    <Typography variant="subtitle2" color="textSecondary">
+                                        Emirati Staff
+                                    </Typography>
+                                    <Typography variant="h6">
+                                        {employer.Employer[0].emiratiStaff || '0'}
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} md={3}>
+                                <Paper 
+                                    elevation={0} 
+                                    style={{ 
+                                        padding: '16px', 
+                                        backgroundColor: Number(employer.Employer[0].currentEmiratiPercentage) >= Number(employer.Employer[0].targetEmirati)
+                                            ? '#f0f9f0'  // Light green background if target met
+                                            : '#fff4e5', // Light yellow background if target not met
+                                        borderRadius: '8px'
+                                    }}
+                                >
+                                    <Typography variant="subtitle2" color="textSecondary">
+                                        Current Emirati Percentage
+                                    </Typography>
+                                    <Typography variant="h6">
+                                        {employer.Employer[0].currentEmiratiPercentage || '0'}%
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} md={3}>
+                                <Paper elevation={0} style={{ padding: '16px', backgroundColor: '#f0f7ff', borderRadius: '8px' }}>
+                                    <Typography variant="subtitle2" color="textSecondary">
+                                        Target Emirati Percentage
+                                    </Typography>
+                                    <Typography variant="h6">
+                                        {employer.Employer[0].targetEmirati || '0'}%
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                        <div style={{ marginTop: '16px', padding: '16px', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
+                            <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                                Status
+                            </Typography>
+                            <div style={{ 
+                                display: 'inline-block',
+                                padding: '8px 16px',
+                                borderRadius: '16px',
+                                backgroundColor: Number(employer.Employer[0].currentEmiratiPercentage) >= Number(employer.Employer[0].targetEmirati)
+                                    ? '#e8f5e9'
+                                    : '#fff3e0',
+                                color: Number(employer.Employer[0].currentEmiratiPercentage) >= Number(employer.Employer[0].targetEmirati)
+                                    ? '#2e7d32'
+                                    : '#ed6c02'
+                            }}>
+                                {Number(employer.Employer[0].currentEmiratiPercentage) >= Number(employer.Employer[0].targetEmirati)
+                                    ? 'Target Met'
+                                    : 'In Progress'}
+                            </div>
+                        </div>
+                    </Paper>
+                )}
+
+                {/* Existing Job Posts Section */}
+                <Paper style={{ padding: '20px' }}>
+                    <Typography variant="h5" gutterBottom>
+                        Job Posts
+                    </Typography>
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
                                 <TableRow>
-                                    <TableCell colSpan={5}>No job posts found.</TableCell>
+                                    <TableCell>Job Title</TableCell>
+                                    <TableCell>Company Name</TableCell>
+                                    <TableCell>Location</TableCell>
+                                    <TableCell>Posted At</TableCell>
+                                    <TableCell>Action</TableCell>
                                 </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <Button
-                    variant="contained"
-                    onClick={() => navigate(-1)}
-                    style={{ marginTop: '20px' }}
-                >
-                    Back
-                </Button>
-            </Paper>
+                            </TableHead>
+                            <TableBody>
+                                {employer.JobPost && employer.JobPost.length > 0 ? (
+                                    employer.JobPost.map((job) => (
+                                        <TableRow key={job.id}>
+                                            <TableCell>{job.title}</TableCell>
+                                            <TableCell>{job.companyName}</TableCell>
+                                            <TableCell>{job.location}</TableCell>
+                                            <TableCell>{formatDate(job.postedAt)}</TableCell>
+                                            <TableCell>
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() => handleOpenDialog(job)}
+                                                >
+                                                    Detail
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={5}>No job posts found.</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <Button
+                        variant="contained"
+                        onClick={() => navigate(-1)}
+                        style={{ marginTop: '20px' }}
+                    >
+                        Back
+                    </Button>
+                </Paper>
+            </div>
 
             {/* Dialog for Job Post Details */}
             <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">

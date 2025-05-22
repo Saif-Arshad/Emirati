@@ -33,6 +33,7 @@ export default function Register() {
     const [location, setLocation] = useState('');
     const [staff, setStaff] = useState('');
     const [emiratiStaff, setEmiratiStaff] = useState('');
+    const [targetEmirati, setTargetEmirati] = useState('');
 
     // Sample options for education multi-select (employee)
     const educationOptions = [
@@ -77,7 +78,7 @@ export default function Register() {
                 experience,
             };
         } else if (role === 'EMPLOYER') {
-            if (!companyName || !location || !staff || !emiratiStaff) {
+            if (!companyName || !location || !staff || !emiratiStaff || !targetEmirati) {
                 toast.error('Please fill out all employer fields');
                 setLoading(false);
                 return;
@@ -87,7 +88,8 @@ export default function Register() {
                 companyName,
                 location,
                 emiratiStaff,
-                staff
+                staff,
+                targetEmirati
             };
         }
 
@@ -377,6 +379,20 @@ export default function Register() {
                                                             placeholder="  Total Emirati staff"
                                                         />
                                                     </div>
+                                                </div>
+                                                <div className="mb-4">
+                                                    <label className="block mb-2 text-start text-sm text-black">
+                                                        Target Emirati Percentage
+                                                    </label>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        max="100"
+                                                        value={targetEmirati}
+                                                        onChange={(e) => setTargetEmirati(e.target.value)}
+                                                        className="w-full p-3 text-sm text-gray-700 border rounded-lg focus:outline-none focus:shadow-outline"
+                                                        placeholder="Enter target percentage (0-100)"
+                                                    />
                                                 </div>
                                             </>
                                         )}

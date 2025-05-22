@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Layout from "./shared/SidebarLayout";
 import { toast } from "react-toastify";
-import { Modal, Box, Typography, Button } from "@mui/material";
+import { Modal, Box, Typography, Button, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 
 function MyApplications() {
     const token = localStorage.getItem("user-token");
@@ -9,6 +9,8 @@ function MyApplications() {
     const [myApplications, setMyApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [updatingStatus, setUpdatingStatus] = useState(false);
+
 
     useEffect(() => {
         const fetchMyApplications = async () => {
@@ -25,7 +27,6 @@ function MyApplications() {
 
                 const response = await fetch(
                     `${import.meta.env.VITE_BACKEND_URL}/api/job/application/mine`,
-
                     {
                         method: "GET",
                         headers: {
@@ -53,6 +54,7 @@ function MyApplications() {
         fetchMyApplications();
     }, [token]);
 
+   
     // Open modal and set the selected job application
     const handleOpenModal = (application) => {
         setSelectedApplication(application);
@@ -92,21 +94,43 @@ function MyApplications() {
                                     <strong>Location:</strong> {application.JobPost.location}
                                 </p>
                                 <p className="text-gray-600 text-start">
-
                                     <strong>Job Type:</strong> {application.JobPost.jobType.replace("_", " ")}
                                 </p>
                                 <p className="text-gray-600 text-start">
-
                                     <strong>Salary:</strong> {application.JobPost.salary}
+                                </p>
+                                <p className="text-gray-600 text-start">
+                                    <strong>Status:</strong>{" "}
+                                    <span className={`font-semibold ${
+                                        application.status === "HIRED" ? "text-green-600" :
+                                        application.status === "CLOSED" ? "text-red-600" :
+                                        "text-blue-600"
+                                    }`}>
+                                        {application.status?.replace("_", " ")}
+                                    </span>
                                 </p>
                                 <p className="text-gray-500 text-start text-sm mt-1">
                                     You Applied on: {new Date(application.appliedAt).toLocaleDateString()}
                                 </p>
-                                <div className="pt-4 flex items-center justify-end">
+                                <div className="pt-4 flex items-center justify-between">
+                                    {/* <FormControl size="small" className="w-[150px]">
+                                        <InputLabel>Update Status</InputLabel>
+                                        <Select
+                                            value={application.status || ""}
+                                            label="Update Status"
+                                            onChange={(e) => handleStatusUpdate(application.id, e.target.value)}
+                                            disabled={updatingStatus}
+                                        >
+                                            {statusOptions.map((status) => (
+                                                <MenuItem key={status} value={status}>
+                                                    {status.replace("_", " ")}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl> */}
                                     <button
                                         onClick={() => handleOpenModal(application)}
                                         className="rounded-full cursor-pointer border-2 border-blue-500 bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-700 hover:border-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300"
-
                                     >
                                         View Details
                                     </button>
